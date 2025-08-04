@@ -32,24 +32,20 @@ The system must ensure an orderly workflow, controlled by states and access rest
 
 ## Technical Requirements
 
-You must model and implement the **Maintenance Order** (`MaintenanceOrder`) resource with the following attributes:
+You can model and implement the **Maintenance Order** (`MaintenanceOrder`) resource as you want. But minimum information must be:
 
-- `title`
-- `description`
-- `asset`
-- `status`
-- `priority`
-- `assigned technician`
-- `creation date`
-- `rejection_reason`
-
-> Tip: `asset` and `assigned technician` could be a relation 👀.
+- Title.
+- Related Asset.
+- Status.
+- Priority.
+- Assigned Technician.
+- Rejection reason (if applies).
 
 ## Use Case
 
 ### Supervisor
 
-- Can **create** new orders in `Created` status and **assign** them to a technician.
+- Can **create** new orders, **assign** them to a technician, vinculate with an asset, and set a priority (`high`, `medium` or `low`).
 - Can **approve or reject** orders in `Pending approval` status.
 - **Cannot** change the status of an order to `In progress` or mark it as `Finalized`.
 
@@ -59,26 +55,29 @@ You must model and implement the **Maintenance Order** (`MaintenanceOrder`) reso
 - Can **start an order** (`In progress`) when beginning the task.
 - Upon completion, must **mark the order as `Pending approval`**.
 - Orders should be displayed **sorted by priority** (from high to low).
-
 ## Getting Started
 
 To begin the challenge, follow these steps:
 
-1. **Clone the repository**
+1. **Fork the repository**
+
+   Go to `https://github.com/OxygenCL/tech-challenge` and click the **"Fork"** button in the top-right corner to create your own copy of the repository.
+
+2. **Clone your forked repository**
 
    ```bash
-   git clone <repository-url>
-   cd <project-folder>
+   git clone https://github.com/your-username/tech-challenge.git
+   cd tech-challenge
    ```
 
-2. **Install dependencies**
+3. **Install dependencies**
 
    ```bash
    composer install
    npm install && npm run dev
    ```
 
-3. **Set up the environment**
+4. **Set up the environment**
 
    Copy the `.env.example` to `.env`. Use SQLite as database provider.
 
@@ -87,38 +86,42 @@ To begin the challenge, follow these steps:
    php artisan key:generate
    ```
 
-4. **Run migrations and seeders**
+5. **Run migrations and seeders**
 
    ```bash
-   php artisan migrate --seed # seeding the database create 3 users and 5 assets
+   php artisan migrate --seed # seeding the database creates 3 users and 5 assets
    ```
 
-5. **Start the local server**
+6. **Start the local server**
 
    ```bash
    php artisan serve
    ```
 
-6. **Access the system**
+7. **Access the system**
 
-   Visit `http://localhost:8000/admin` in your browser.
+   Visit `http://127.0.0.1:8000/admin` in your browser (or whatever is your local host)
 
    Use one of the following users to log in:
 
-    - `super@oxygen.test` / password: `sup-pass`
-    - `tech1@oxygen.test` / password: `tech1-pass`
-    - `tech2@oxygen.test` / password: `tech2-pass`
+   - `super@oxygen.test` / password: `sup-pass`
+   - `tech1@oxygen.test` / password: `tech1-pass`
+   - `tech2@oxygen.test` / password: `tech2-pass`
 
-> Note: Filament is already installed and configured in the project.
+> **Note:** Filament is already installed and configured in the project.
+
+---
 
 ## Submission Instructions
 
 Once you have completed the challenge:
 
-1. Push your code to a **public GitHub repository**.
+1. Push your code to your **public GitHub fork**.
 2. Make sure the latest commit reflects your final implementation.
 3. Share the repository URL by email:
-    - To: Oscar Carvajal (TL) <ocarvajal@oxygen.tech>.
-    - CC: Camilo Duque (SWE) <cduque@oxygen.tech> and Diego Torres (PM) <dtorres@oxygen.tech>.
+   - **To**: Oscar Carvajal (TL) `<ocarvajal@oxygen.tech>`
+   - **CC**: Camilo Duque (SWE) `<cduque@oxygen.tech>` and Diego Torres (PM) `<dtorres@oxygen.tech>`
 
-> Please ensure that the repository is publicly accessible. Private repositories or ZIP file submissions will not be accepted.
+> ⚠️ Please ensure that the repository is publicly accessible. Private repositories or ZIP file submissions will not be accepted.
+
+_Enjoy and good luck!_ :rocket:
