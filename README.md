@@ -1,61 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Technical Challenge: Oxygen CMMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Stack
 
-## About Laravel
+This challenge must be solved using [**Laravel 12**](https://laravel.com/) and [**Filament 3**](https://filamentphp.com/). The interface and resource management should be implemented using Filament.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## General Context
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+In a CMMS (Computerized Maintenance Management System), maintenance orders are requests to repair, inspect, or intervene on assets within a facility.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+These orders must be:
 
-## Learning Laravel
+- Created by supervisors who detect a problem on an asset.
+- Executed and closed by technicians once the intervention is completed.
+- Approved or rejected by supervisors after execution to validate the closure.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The system must ensure an orderly workflow, controlled by states and access restrictions according to the user's role.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Maintenance Order Statuses
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Created**  
+   Initial state when the order is created (by the supervisor).
 
-## Laravel Sponsors
+2. **In progress**  
+   When a technician starts working on the order.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Pending approval**  
+   When the technician finishes the task and marks it as ready for review.
 
-### Premium Partners
+4. **Approved / Rejected**  
+   Final outcome decided by a supervisor after reviewing the work.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Technical Requirements
 
-## Contributing
+You must model and implement the **Maintenance Order** (`MaintenanceOrder`) resource with the following attributes:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- `title`
+- `description`
+- `asset`
+- `status`
+- `priority`
+- `assigned technician`
+- `creation date`
+- `rejection_reason`
 
-## Code of Conduct
+> Tip: `asset` and `assigned technician` could be a relation 👀.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Use Case
 
-## Security Vulnerabilities
+### Supervisor
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Can **create** new orders in `Created` status and **assign** them to a technician.
+- Can **approve or reject** orders in `Pending approval` status.
+- **Cannot** change the status of an order to `In progress` or mark it as `Finalized`.
 
-## License
+### Technician
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Can **only view** the orders assigned to them.
+- Can **start an order** (`In progress`) when beginning the task.
+- Upon completion, must **mark the order as `Pending approval`**.
+- Orders should be displayed **sorted by priority** (from high to low).
+
+## Getting Started
+
+To begin the challenge, follow these steps:
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd <project-folder>
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   composer install
+   npm install && npm run dev
+   ```
+
+3. **Set up the environment**
+
+   Copy the `.env.example` to `.env`. Use SQLite as database provider.
+
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Run migrations and seeders**
+
+   ```bash
+   php artisan migrate --seed # seeding the database create 3 users and 5 assets
+   ```
+
+5. **Start the local server**
+
+   ```bash
+   php artisan serve
+   ```
+
+6. **Access the system**
+
+   Visit `http://localhost:8000/admin` in your browser.
+
+   Use one of the following users to log in:
+
+    - `super@oxygen.test` / password: `sup-pass`
+    - `tech1@oxygen.test` / password: `tech1-pass`
+    - `tech2@oxygen.test` / password: `tech2-pass`
+
+> Note: Filament is already installed and configured in the project.
+
+## Submission Instructions
+
+Once you have completed the challenge:
+
+1. Push your code to a **public GitHub repository**.
+2. Make sure the latest commit reflects your final implementation.
+3. Share the repository URL by email:
+    - To: Oscar Carvajal (TL) <ocarvajal@oxygen.tech>.
+    - CC: Camilo Duque (SWE) <cduque@oxygen.tech> and Diego Torres (PM) <dtorres@oxygen.tech>.
+
+> Please ensure that the repository is publicly accessible. Private repositories or ZIP file submissions will not be accepted.
