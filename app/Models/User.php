@@ -7,7 +7,7 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -49,8 +49,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function maintenance_order(): BelongsTo
+    public function maintenance_order(): HasMany
     {
-        return $this->belongsTo(MaintenanceOrder::class);
+        return $this->hasMany(MaintenanceOrder::class);
+    }
+
+    public function isTechnician(): bool
+    {
+        return $this->role === UserRole::Technician;
+    }
+
+    public function isSupervisor(): bool
+    {
+        return $this->role === UserRole::Supervisor;
     }
 }

@@ -2,9 +2,18 @@
 
 namespace App\Enums;
 
-enum Priority: string
+enum Priority: int
 {
-    case High = 'high';
-    case Medium = 'medium';
-    case Low = 'low';
+    case High = 1;
+    case Medium = 2;
+    case Low = 3;
+
+    public function label(): string
+    {
+        return match($this) {
+            self::High => 'High',
+            self::Medium => 'Medium',
+            self::Low => 'Low',
+        };
+    }
 }

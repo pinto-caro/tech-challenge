@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Priority;
 use App\Filament\Resources\MaintenanceOrderResource\Pages;
 use App\Filament\Resources\MaintenanceOrderResource\RelationManagers;
 use App\Models\MaintenanceOrder;
@@ -24,25 +25,26 @@ class MaintenanceOrderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                ->required(),
+                    ->required(),
+
                 Forms\Components\Select::make('asset_id')
-                ->relationship('asset', 'name')
-                ->required(),
+                    ->relationship('asset', 'name')
+                    ->required(),
+                
                 Forms\Components\Select::make('user_id')
-                #->relationship('technician', 'name')
-                ->relationship(
-                    name: 'user',
-                    titleAttribute: 'name',
-                    modifyQueryUsing: (fn (Builder $query) => $query->where('role', 'technician'))
-                )
-                ->required(),
+                    ->relationship(
+                        name: 'user',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: (fn (Builder $query) => $query->where('role', 'technician'))
+                    )
+                    ->required(),
                 Forms\Components\Select::make('priority')
-                ->options([
-                    'high' => 'High',
-                    'medium' => 'Medium',
-                    'low' => 'Low',
-                ])
-                ->required(),
+                    ->options([
+                        Priority::High->value => Priority::High->label(),
+                        Priority::Medium->value => Priority::Medium->label(),
+                        Priority::Low->value => Priority::Low->label(),
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -50,8 +52,15 @@ class MaintenanceOrderResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title'),
+                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('priority')
+                    ->label('Priority')
+                    ->formatStateUsing(fn ($state) => Priority::tryFrom($state)?->label()),
+                Tables\Columns\TextColumn::make('asset.name'),
+                Tables\Columns\TextColumn::make('user.name'),
             ])
+            ->defaultSort('priority', 'asc')
             ->filters([
                 //
             ])

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceOrder extends Model
@@ -18,12 +17,12 @@ class MaintenanceOrder extends Model
     ];
 
     protected $attributes = [
-        'status' => 'created', 
+        'status' => 'Created', 
     ];
 
-    public function asset(): HasOne
+    public function asset(): BelongsTo
     {
-        return $this->hasOne(Asset::class);
+        return $this->belongsTo(Asset::class);
     }
 
     public function user(): BelongsTo

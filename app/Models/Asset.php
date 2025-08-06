@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
@@ -11,8 +11,8 @@ class Asset extends Model
       'name',
     ];
 
-    public function maintenance_order(): BelongsTo
+    public function maintenance_order(): HasMany
     {
-        return $this->belongsTo(MaintenanceOrder::class);
+        return $this->hasMany(MaintenanceOrder::class);
     }
 }
