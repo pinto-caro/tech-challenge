@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->enum('status', array_column(Status::cases(), 'value'));
-            #$table->enum('priority', array_column(Priority::cases(), 'value'));
             $table->unsignedTinyInteger('priority')->default(Priority::Medium->value);
             $table->string('rejection_reason')->nullable();;
             $table->foreignId('asset_id')->constrained('assets')->cascadeOnDelete();

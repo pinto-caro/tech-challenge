@@ -16,4 +16,22 @@ enum Priority: int
             self::Low => 'Low',
         };
     }
+
+    public function color(): string
+    {
+        return match($this) {
+            self::High => 'danger',    
+            self::Medium => 'warning',
+            self::Low => 'info',   
+        };
+    }
+
+    public function icon(): string
+    {
+        return match($this) {
+            self::High => 'heroicon-o-exclamation-triangle',
+            self::Medium => 'heroicon-o-minus',
+            self::Low => 'heroicon-o-chevron-down',
+        };
+    }
 }

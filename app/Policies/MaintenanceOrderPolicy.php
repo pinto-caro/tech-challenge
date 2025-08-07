@@ -37,14 +37,6 @@ class MaintenanceOrderPolicy
      */
     public function update(User $user, MaintenanceOrder $maintenanceOrder): bool
     {
-        if ($user->isSupervisor()) {
-            return !in_array($maintenanceOrder->status, ['in_progress', 'finalized']);
-        }
-
-        if ($user->isTechnician()) {
-            return $user->id === $maintenanceOrder->user_id;
-        }
-        
         return false;
     }
 
