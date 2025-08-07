@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Priority;
 use App\Enums\Status;
+use App\Enums\UserRole;
 use App\Filament\Resources\MaintenanceOrderResource\Pages;
 use App\Filament\Resources\MaintenanceOrderResource\RelationManagers;
 use Filament\Notifications\Notification;
@@ -43,7 +44,7 @@ class MaintenanceOrderResource extends Resource
                     ->relationship(
                         name: 'user',
                         titleAttribute: 'name',
-                        modifyQueryUsing: (fn (Builder $query) => $query->where('role', 'technician'))
+                        modifyQueryUsing: (fn (Builder $query) => $query->where('role', UserRole::Technician->value))
                     )
                     ->required(),
 
@@ -63,7 +64,7 @@ class MaintenanceOrderResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
 
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\BadgeColumn::make('status')
                     ->badge()
                     ->color(fn ($state): string => Status::tryFrom($state)?->color() ?? 'gray'),
 
@@ -100,42 +101,32 @@ class MaintenanceOrderResource extends Resource
                         ->icon('heroicon-o-play')
                         ->color('warning')
                         ->requiresConfirmation()
-                        ->visible(fn ($record) => auth()->user()->isTechnician() && $record->status === Status::Created->value)
-                        ->action(fn ($record) => $record->update(['status' => Status::InProgress->value])),
+                        ->visible(fn ($record) => $record->canBeStarted())
+                        ->action(fn ($record) => $record->start()),
 
                     Action::make('mark_pending')
                         ->label('Mark as Pending Approval')
                         ->icon('heroicon-o-clock')
                         ->color('info')
                         ->requiresConfirmation()
-                        ->visible(fn ($record) => (auth()->user()->isTechnician() || auth()->user()->isSupervisor()) && $record->status === Status::InProgress->value)
-                        ->action(fn ($record) => $record->update(['status' => Status::Pending->value])),
+                        ->visible(fn ($record) => $record->canBeMarkedAsPending())
+                        ->action(fn ($record) => $record->markAsPending()),
 
                     Action::make('approve')
                         ->label('Approve')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->visible(fn ($record) => auth()->user()->isSupervisor() && $record->status === Status::Pending->value)
-                        ->action(fn ($record) => $record->update(['status' => Status::Approved->value])),
+                        ->visible(fn ($record) => $record->canBeApproved())
+                        ->action(fn ($record) => $record->approve()),
 
                     Action::make('reject')
                         ->label('Reject')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->visible(fn ($record) => auth()->user()->isSupervisor() && $record->status === Status::Pending->value)
-                        ->action(function ($record, $data) {
-                            $record->update([
-                                'status' => Status::Rejected->value,
-                                'rejection_reason' => $data['rejection_reason']
-                            ]);
-                            
-                            Notification::make()
-                                ->title('Order rejected')
-                                ->success()
-                                ->send();
-                        })
+                        ->visible(fn ($record) => $record->canBeRejected())
+                        ->action(fn ($record, $data) => $record->reject($data['rejection_reason']))
                         ->modalHeading('Reject Maintenance Order')
                         ->modalDescription('This action will mark the order as rejected.')
                         ->modalSubmitActionLabel('Reject')
@@ -148,22 +139,14 @@ class MaintenanceOrderResource extends Resource
                         ->modalHeading('Rejection reason')
                         ->modalDescription(fn ($record) => $record->rejection_reason)
                         ->modalSubmitAction(false)
-                        ->modalCancelActionLabel('Cerrar')
-                        ->visible(fn ($record) => $record->status === Status::Rejected->value && !empty($record->rejection_reason)),
-
-
-                    Action::make('unavailable')
-                        ->label('Not authorized')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('gray')
-                        ->disabled() 
-                        ->visible(fn ($record) => (auth()->user()->isSupervisor() && $record->status === Status::Created->value) || 
-                        (auth()->user()->isTechnician() && $record->status === Status::Pending->value))
+                        ->modalCancelActionLabel('Close')
+                        ->visible(fn ($record) => $record->canViewRejectionReason()),
                 ])
                 ->label('Actions')
                 ->icon('heroicon-m-ellipsis-vertical')
                 ->color('gray')
-                ->button(),
+                ->button()
+                ->visible(fn ($record) => $record->hasAvailableActions()),
             ]);
     }
 
