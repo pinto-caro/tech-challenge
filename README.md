@@ -47,7 +47,7 @@ You can model and implement the **Maintenance Order** (`MaintenanceOrder`) resou
 
 - Can **create** new orders, **assign** them to a technician, vinculate with an asset, and set a priority (`high`, `medium` or `low`).
 - Can **approve or reject** orders in `Pending approval` status.
-- **Cannot** change the status of an order to `In progress` or mark it as `Finalized`.
+- **Cannot** change the status of an order to `In progress`.
 
 ### Technician
 
